@@ -1,8 +1,6 @@
 import numpy, sys 
 
-def logistic(x) : 
-    return 1 / (1 + numpy.exp(-x))
-
+def logistic(x) : return 1 / (1 + numpy.exp(-x))
 def logistic_deriv(x) : return x * (1 - x)
 
 class Neuron:
@@ -40,7 +38,9 @@ class Neuron:
         for i in range(len(self.prev)):
             weight_deltas.append(deriv * self.prev[i])
             self.weights[i] -= self.eta * weight_deltas[i]
-            
+
+        self.weights[i+1] -= self.eta * deriv
+
         print("weight deltas")
         print(weight_deltas)
         print("updated weights")
@@ -178,10 +178,13 @@ def main():
         print("loss before")
         print(nn.calculateloss(nn.calculate([.05,.10]),[.01,.99]))
 
-        nn.train([.05,.10],[.01,.99])
+        for i in range(1,10001):
+            nn.train([.05,.10],[.01,.99])
 
         print("loss after")
         print(nn.calculateloss(nn.calculate([.05,.10]),[.01,.99]))
+        
+        nn.print_nn()
 
     elif sys.argv[1] == 'and':
         print("running and")
