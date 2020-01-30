@@ -190,6 +190,22 @@ def main():
         
     else:
         print("running xor")
+        num_inputs = 2
+        num_layers = 2
+        num_neurons = [4,1]
+        weights = "random"
+
+        inputs = [([0, 0], [0]), ([0, 1], [1]), ([1, 0], [1]), ([1, 1], [0])]
+        nn = NeuralNetwork(num_layers, num_neurons, "logistic", num_inputs, square_error, .1, weights)
+
+        for i in range(500000):
+            for sample, target in inputs:
+                nn.train(sample, target)
+
+        print(nn.calculate([0,0]))
+        print(nn.calculate([1,0]))
+        print(nn.calculate([0,1]))
+        print(nn.calculate([1,1]))
 
 if __name__ == '__main__':
     main()
