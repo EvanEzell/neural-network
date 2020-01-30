@@ -3,6 +3,13 @@ import numpy, sys
 def logistic(x) : return 1 / (1 + numpy.exp(-x))
 def logistic_deriv(x) : return x * (1 - x)
 
+def square_error(prediction, target):
+    total = 0
+    for i in range(len(prediction)):
+        total += .5*((prediction[i]-target[i])**2)
+    return total
+
+
 class Neuron:
     
     def __init__(self, activation, num_inputs, eta, weights):
@@ -41,11 +48,6 @@ class Neuron:
 
         self.weights[i+1] -= self.eta * deriv
 
-        print("weight deltas")
-        print(weight_deltas)
-        print("updated weights")
-        print(self.weights)
-        print("")
         return weight_deltas 
 
     def print_neuron(self):
@@ -83,8 +85,6 @@ class FullyConnectedLayer:
         for i in range(self.num_neurons):
             delta_sums.append(sum(self.neurons[i].train(deriv[i])))
 
-        print("printing delta sums")
-        print(delta_sums)
         return(delta_sums)
 
     def print_layer(self):
@@ -129,7 +129,6 @@ class NeuralNetwork:
         return self.loss(prediction, target)
 
     def train(self, data, target):
-        print("training..")
         prediction = self.calculate(data)
 
         derivs = []
@@ -139,8 +138,6 @@ class NeuralNetwork:
 
         for i in range(self.num_layers-2,-1,-1):
             derivs = self.layers[self.num_layers-1].train(derivs)
-
-        print("done training...")
 
     def print_nn(self):
         for i in range(self.num_layers):
@@ -159,27 +156,13 @@ def main():
 
     if sys.argv[1] == 'example':
         print("running example")
+        num_inputs = 2
         num_layers = 2
         num_neurons = [2,2]
-        weights = "random"
         weights = [[[.15,.20,.35],[.25,.30,.35]],[[.40,.45,.60],[.50,.55,.60]]]
 
-        num_inputs = 2
-
-        def loss(prediction, target):
-            total = 0
-            for i in range(len(prediction)):
-                total += .5*((prediction[i]-target[i])**2)
-            return total
-
-        nn = NeuralNetwork(num_layers, num_neurons, "logistic", num_inputs, loss, .5, weights)
-        nn.print_nn()
-
-        print("loss before")
-        print(nn.calculateloss(nn.calculate([.05,.10]),[.01,.99]))
-
-        for i in range(1,10001):
-            nn.train([.05,.10],[.01,.99])
+        nn = NeuralNetwork(num_layers, num_neurons, "logistic", num_inputs, square_error, .5, weights)
+        nn.train([.05,.10],[.01,.99])
 
         print("loss after")
         print(nn.calculateloss(nn.calculate([.05,.10]),[.01,.99]))
@@ -188,6 +171,23 @@ def main():
 
     elif sys.argv[1] == 'and':
         print("running and")
+        num_inputs = 2
+        num_layers = 2
+        num_neurons = [1,1]
+        weights = "random"
+
+        inputs = [([0, 0], [0]), ([0, 1], [0]), ([1, 0], [0]), ([1, 1], [1])]
+        nn = NeuralNetwork(num_layers, num_neurons, "logistic", num_inputs, square_error, .1, weights)
+
+        for i in range(250000):
+            for sample, target in inputs:
+                nn.train(sample, target)
+
+        print(nn.calculate([0,0]))
+        print(nn.calculate([1,0]))
+        print(nn.calculate([0,1]))
+        print(nn.calculate([1,1]))
+        
     else:
         print("running xor")
 
