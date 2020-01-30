@@ -79,8 +79,13 @@ class FullyConnectedLayer:
         return output
 
     def train(self, deriv):
+        delta_sums = []
         for i in range(self.num_neurons):
-            self.neurons[i].train(deriv[i])
+            delta_sums.append(sum(self.neurons[i].train(deriv[i])))
+
+        print("printing delta sums")
+        print(delta_sums)
+        return(delta_sums)
 
     def print_layer(self):
         for i in range(self.num_neurons):
@@ -132,8 +137,10 @@ class NeuralNetwork:
             for i in range(len(prediction)):
                 derivs.append((prediction[i] - target[i]) * logistic_deriv(prediction[i]))
 
-        self.layers[self.num_layers-1].train(derivs)
+        for i in range(self.num_layers-2,-1,-1):
+            derivs = self.layers[self.num_layers-1].train(derivs)
 
+        print("done training...")
 
     def print_nn(self):
         for i in range(self.num_layers):
@@ -168,10 +175,13 @@ def main():
         nn = NeuralNetwork(num_layers, num_neurons, "logistic", num_inputs, loss, .5, weights)
         nn.print_nn()
 
-        #print(nn.calculate([.05,.10]))
-        #print(nn.calculateloss(nn.calculate([.05,.10]),[.01,.99]))
+        print("loss before")
+        print(nn.calculateloss(nn.calculate([.05,.10]),[.01,.99]))
 
         nn.train([.05,.10],[.01,.99])
+
+        print("loss after")
+        print(nn.calculateloss(nn.calculate([.05,.10]),[.01,.99]))
 
     elif sys.argv[1] == 'and':
         print("running and")
