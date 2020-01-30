@@ -1,5 +1,10 @@
 import numpy, sys 
 
+def logistic(x) : 
+    return 1 / (1 + numpy.exp(-x))
+
+def logistic_deriv(x) : return x * (1 - x)
+
 class Neuron:
     
     def __init__(self, activation, num_inputs, eta, weights):
@@ -21,7 +26,27 @@ class Neuron:
         for i in range(len(data)):
             total += data[i] * self.weights[i]
 
-        return self.activate(total + self.weights[len(data)])
+        self.prev = data
+        self.net = total + self.weights[len(data)]
+        self.out = self.activate(self.net)
+
+        return self.out
+
+    def train(self, deriv):
+        if self.activation == logistic:
+            self.delta = logistic_deriv(self.out)
+
+        weight_deltas = []
+        for i in range(len(self.prev)):
+            weight_deltas.append(deriv * self.prev[i])
+            self.weights[i] -= self.eta * weight_deltas[i]
+            
+        print("weight deltas")
+        print(weight_deltas)
+        print("updated weights")
+        print(self.weights)
+        print("")
+        return weight_deltas 
 
     def print_neuron(self):
         print("num_inputs: " + str(self.num_inputs))
@@ -34,6 +59,7 @@ class Neuron:
 class FullyConnectedLayer:
     def __init__(self, num_neurons, activation, num_inputs, eta, weights):
         self.activation = activation
+        self.num_neurons = num_neurons
         self.num_inputs = num_inputs
         self.eta = eta
 
@@ -50,12 +76,11 @@ class FullyConnectedLayer:
         for i in range(self.num_neurons):
             output.append(self.neurons[i].calculate(data))
 
-        print(output)
         return output
 
     def train(self, deriv):
-        for i in range(len(self.neurons)):
-             
+        for i in range(self.num_neurons):
+            self.neurons[i].train(deriv[i])
 
     def print_layer(self):
         for i in range(self.num_neurons):
@@ -74,10 +99,9 @@ class NeuralNetwork:
         self.activation = []
         for i in range(num_layers):
             if activation == "logistic":
-                self.activation.append(lambda x : 1 / (1 + numpy.exp(-x)))
+                self.activation.append(logistic)
             elif activation == "linear":
                 self.activation.append(lambda x : x)
-
 
         self.layers = []
         prev_inputs = self.num_inputs
@@ -104,11 +128,11 @@ class NeuralNetwork:
         prediction = self.calculate(data)
 
         derivs = []
-        if self.activation[num_layers-1] == "logistic":
-            for i in range(len(output)):
-                derivs.append((prediction[i] - target[i]) * logistic_deriv(prediction))
+        if self.activation[self.num_layers-1] == logistic:
+            for i in range(len(prediction)):
+                derivs.append((prediction[i] - target[i]) * logistic_deriv(prediction[i]))
 
-        self.layers[num_layers-1].train(deriv)
+        self.layers[self.num_layers-1].train(derivs)
 
 
     def print_nn(self):
@@ -144,8 +168,10 @@ def main():
         nn = NeuralNetwork(num_layers, num_neurons, "logistic", num_inputs, loss, .5, weights)
         nn.print_nn()
 
-        print(nn.calculate([.05,.10]))
-        print(nn.calculateloss(nn.calculate([.05,.10]),[.01,.99]))
+        #print(nn.calculate([.05,.10]))
+        #print(nn.calculateloss(nn.calculate([.05,.10]),[.01,.99]))
+
+        nn.train([.05,.10],[.01,.99])
 
     elif sys.argv[1] == 'and':
         print("running and")
