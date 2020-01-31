@@ -189,10 +189,8 @@ def main():
         print("'example', 'and', or 'xor'")
         exit()
 
-    print("Choice: " + sys.argv[1])
-
     if sys.argv[1] == 'example':
-        print("running example")
+        print("Running example from class.")
         num_inputs = 2
         num_layers = 2
         num_neurons = [2,2]
@@ -200,35 +198,38 @@ def main():
 
         nn = NeuralNetwork(num_layers, num_neurons, "logistic", 
                            num_inputs, square_error, .5, weights)
+
+        print("Loss before training example: ", end = '')
+        print(nn.calculateloss(nn.calculate([.05,.10]),[.01,.99]))
+
         nn.train([.05,.10],[.01,.99])
 
-        print("loss after")
+        print("Loss after training example: ", end = '')
         print(nn.calculateloss(nn.calculate([.05,.10]),[.01,.99]))
-        
-        nn.print_nn()
 
     elif sys.argv[1] == 'and':
-        print("running and")
+        print("Running 'and' example.")
         num_inputs = 2
         num_layers = 2
         num_neurons = [1,1]
         weights = "random"
 
-        inputs = [([0, 0], [0]), ([0, 1], [0]), ([1, 0], [0]), ([1, 1], [1])]
         nn = NeuralNetwork(num_layers, num_neurons, "logistic", 
                            num_inputs, square_error, .1, weights)
 
+        inputs = [([0, 0], [0]), ([0, 1], [0]), ([1, 0], [0]), ([1, 1], [1])]
         for i in range(250000):
             for sample, target in inputs:
                 nn.train(sample, target)
 
-        print(nn.calculate([0,0]))
-        print(nn.calculate([1,0]))
-        print(nn.calculate([0,1]))
-        print(nn.calculate([1,1]))
+        print("Outputs for all 4 inputs after training.")
+        print("0 and 0 -> " + str(nn.calculate([0,0])))
+        print("1 and 0 -> " + str(nn.calculate([1,0])))
+        print("0 and 1 -> " + str(nn.calculate([0,1])))
+        print("1 and 1 -> " + str(nn.calculate([1,1])))
         
     else:
-        print("running xor")
+        print("Running 'xor' example.")
         num_inputs = 2
         num_layers = 2
         num_neurons = [4,1]
@@ -238,14 +239,19 @@ def main():
         nn = NeuralNetwork(num_layers, num_neurons, "logistic", 
                            num_inputs, square_error, .1, weights)
 
-        for i in range(500000):
+        for i in range(250000):
             for sample, target in inputs:
                 nn.train(sample, target)
+            if i % 10000 == 0:
+                print(nn.calculateloss(nn.calculate([1, 0]),[1]))
 
-        print(nn.calculate([0,0]))
-        print(nn.calculate([1,0]))
-        print(nn.calculate([0,1]))
-        print(nn.calculate([1,1]))
+        print("Outputs for all 4 inputs after training.")
+        print("0 and 0 -> " + str(nn.calculate([0,0])))
+        print("1 and 0 -> " + str(nn.calculate([1,0])))
+        print("0 and 1 -> " + str(nn.calculate([0,1])))
+        print("1 and 1 -> " + str(nn.calculate([1,1])))
+
+        nn.print_nn()
 
 if __name__ == '__main__':
     main()
