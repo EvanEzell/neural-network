@@ -25,13 +25,13 @@ def square_error_deriv(prediction, target):
 def log_loss_deriv(prediction, target):
     return - (target/prediction) + ((1-target)/(1-prediction))
 
+# get the derivative of a function
 def get_deriv(function):
     if function == logistic: return logistic_deriv 
     elif function == linear: return linear_deriv
     elif function == square_error: return square_error_deriv
     elif function == log_loss: return log_loss_deriv
     else: return None
-
 
 class Neuron:
     
@@ -90,10 +90,16 @@ class FullyConnectedLayer:
         self.neurons = []
         if weights == "random":
             for i in range(self.num_neurons):
-                self.neurons.append(Neuron(self.activation, self.num_inputs, self.eta, "random"))
+                self.neurons.append(Neuron(self.activation,
+                                           self.num_inputs,
+                                           self.eta,
+                                           "random"))
         else:
             for i in range(self.num_neurons):
-                self.neurons.append(Neuron(self.activation, self.num_inputs, self.eta, weights[i]))
+                self.neurons.append(Neuron(self.activation,
+                                           self.num_inputs,
+                                           self.eta,
+                                           weights[i]))
 
     def calculate(self, data):
         output = []
@@ -116,7 +122,8 @@ class FullyConnectedLayer:
             print("")
 
 class NeuralNetwork:
-    def __init__(self, num_layers, num_neurons, activation, num_inputs, loss, eta, weights):
+    def __init__(self, num_layers, num_neurons, activation, 
+                       num_inputs, loss, eta, weights):
         self.num_layers = num_layers
         self.num_neurons = num_neurons
         self.num_inputs = num_inputs
@@ -134,11 +141,19 @@ class NeuralNetwork:
         prev_inputs = self.num_inputs
         if weights == "random":
             for i in range(self.num_layers):
-                self.layers.append(FullyConnectedLayer(self.num_neurons[i], self.activation[i], prev_inputs, self.eta, "random"))
+                self.layers.append(FullyConnectedLayer(self.num_neurons[i],
+                                                       self.activation[i],
+                                                       prev_inputs,
+                                                       self.eta,
+                                                       "random"))
                 prev_inputs = self.num_neurons[i]
         else:
             for i in range(self.num_layers):
-                self.layers.append(FullyConnectedLayer(self.num_neurons[i], self.activation[i], prev_inputs, self.eta, weights[i]))
+                self.layers.append(FullyConnectedLayer(self.num_neurons[i],
+                                                       self.activation[i],
+                                                       prev_inputs,
+                                                       self.eta,
+                                                       weights[i]))
                 prev_inputs = self.num_neurons[i]
 
     def calculate(self, data):
@@ -155,7 +170,8 @@ class NeuralNetwork:
 
         derivs = []
         for i in range(len(prediction)):
-            derivs.append(get_deriv(self.loss)(prediction[i],target[i]) * get_deriv(self.activation[self.num_layers-1])(prediction[i]))
+            derivs.append(get_deriv(self.loss)(prediction[i],target[i]) * 
+                          get_deriv(self.activation[self.num_layers-1])(prediction[i]))
 
         for i in range(self.num_layers-2,-1,-1):
             derivs = self.layers[self.num_layers-1].train(derivs)
@@ -182,7 +198,8 @@ def main():
         num_neurons = [2,2]
         weights = [[[.15,.20,.35],[.25,.30,.35]],[[.40,.45,.60],[.50,.55,.60]]]
 
-        nn = NeuralNetwork(num_layers, num_neurons, "logistic", num_inputs, square_error, .5, weights)
+        nn = NeuralNetwork(num_layers, num_neurons, "logistic", 
+                           num_inputs, square_error, .5, weights)
         nn.train([.05,.10],[.01,.99])
 
         print("loss after")
@@ -198,7 +215,8 @@ def main():
         weights = "random"
 
         inputs = [([0, 0], [0]), ([0, 1], [0]), ([1, 0], [0]), ([1, 1], [1])]
-        nn = NeuralNetwork(num_layers, num_neurons, "logistic", num_inputs, square_error, .1, weights)
+        nn = NeuralNetwork(num_layers, num_neurons, "logistic", 
+                           num_inputs, square_error, .1, weights)
 
         for i in range(250000):
             for sample, target in inputs:
@@ -217,7 +235,8 @@ def main():
         weights = "random"
 
         inputs = [([0, 0], [0]), ([0, 1], [1]), ([1, 0], [1]), ([1, 1], [0])]
-        nn = NeuralNetwork(num_layers, num_neurons, "logistic", num_inputs, square_error, .1, weights)
+        nn = NeuralNetwork(num_layers, num_neurons, "logistic", 
+                           num_inputs, square_error, .1, weights)
 
         for i in range(500000):
             for sample, target in inputs:
