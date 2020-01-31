@@ -1,19 +1,36 @@
 import numpy, sys 
 
+# activation functions and their derivatives
 def logistic(x) : return 1 / (1 + numpy.exp(-x))
 def logistic_deriv(x) : return x * (1 - x)
 def linear(x) : return x
 def linear_deriv(x) : return 1
-def get_deriv(function):
-    if function == logistic: return logistic_deriv 
-    elif function == linear: return linear_deriv
-    else: return None
 
+# loss functions and their derivatives
 def square_error(prediction, target):
     total = 0
     for i in range(len(prediction)):
-        total += .5*((prediction[i]-target[i])**2)
+        total += .5 * ((prediction[i]-target[i])**2)
     return total
+def log_loss(prediction, target):
+    total = 0
+    for i in range(len(prediction)):
+        if target == 1:
+            total += -log(prediction)
+        else:
+            total += -log(1 - prediction)
+    return total
+def square_error_deriv(prediction, target):
+    return prediction - target
+def log_loss_deriv(prediction, target):
+    return - (target/prediction) + ((1-target)/(1-prediction))
+
+def get_deriv(function):
+    if function == logistic: return logistic_deriv 
+    elif function == linear: return linear_deriv
+    elif function == square_error: return square_error_deriv
+    elif function == log_loss: return log_loss_deriv
+    else: return None
 
 
 class Neuron:
@@ -138,7 +155,7 @@ class NeuralNetwork:
 
         derivs = []
         for i in range(len(prediction)):
-            derivs.append((prediction[i] - target[i]) * get_deriv(self.activation[self.num_layers-1])(prediction[i]))
+            derivs.append(get_deriv(self.loss)(prediction[i],target[i]) * get_deriv(self.activation[self.num_layers-1])(prediction[i]))
 
         for i in range(self.num_layers-2,-1,-1):
             derivs = self.layers[self.num_layers-1].train(derivs)
