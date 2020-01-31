@@ -2,6 +2,12 @@ import numpy, sys
 
 def logistic(x) : return 1 / (1 + numpy.exp(-x))
 def logistic_deriv(x) : return x * (1 - x)
+def linear(x) : return x
+def linear_deriv(x) : return 1
+def get_deriv(function):
+    if function == logistic: return logistic_deriv 
+    elif function == linear: return linear_deriv
+    else: return None
 
 def square_error(prediction, target):
     total = 0
@@ -38,8 +44,7 @@ class Neuron:
         return self.out
 
     def train(self, deriv):
-        if self.activation == logistic:
-            self.delta = logistic_deriv(self.out)
+        self.delta = get_deriv(self.activation)(self.out)
 
         weight_deltas = []
         for i in range(len(self.prev)):
@@ -106,7 +111,7 @@ class NeuralNetwork:
             if activation == "logistic":
                 self.activation.append(logistic)
             elif activation == "linear":
-                self.activation.append(lambda x : x)
+                self.activation.append(linear)
 
         self.layers = []
         prev_inputs = self.num_inputs
@@ -132,9 +137,8 @@ class NeuralNetwork:
         prediction = self.calculate(data)
 
         derivs = []
-        if self.activation[self.num_layers-1] == logistic:
-            for i in range(len(prediction)):
-                derivs.append((prediction[i] - target[i]) * logistic_deriv(prediction[i]))
+        for i in range(len(prediction)):
+            derivs.append((prediction[i] - target[i]) * get_deriv(self.activation[self.num_layers-1])(prediction[i]))
 
         for i in range(self.num_layers-2,-1,-1):
             derivs = self.layers[self.num_layers-1].train(derivs)
