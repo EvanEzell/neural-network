@@ -235,20 +235,20 @@ def main():
         num_neurons = [1,1]
         weights = "random"
 
-#        print("Training with one perceptron.")
-#        inputs = [([0, 0], [0]), ([0, 1], [1]), ([1, 0], [1]), ([1, 1], [0])]
-#        nn = NeuralNetwork(num_layers, num_neurons, "logistic", 
-#                           num_inputs, square_error, .1, weights)
-#
-#        for i in range(250000):
-#            for sample, target in inputs:
-#                nn.train(sample, target)
-#
-#        print("Outputs for all 4 inputs after training.")
-#        print("0 and 0 -> " + str(nn.calculate([0,0])))
-#        print("1 and 0 -> " + str(nn.calculate([1,0])))
-#        print("0 and 1 -> " + str(nn.calculate([0,1])))
-#        print("1 and 1 -> " + str(nn.calculate([1,1])))
+        print("Training with one perceptron.")
+        inputs = [([0, 0], [0]), ([0, 1], [1]), ([1, 0], [1]), ([1, 1], [0])]
+        nn = NeuralNetwork(num_layers, num_neurons, "logistic", 
+                           num_inputs, square_error, .1, weights)
+
+        for i in range(250000):
+            for sample, target in inputs:
+                nn.train(sample, target)
+
+        print("Outputs for all 4 inputs after training.")
+        print("0 and 0 -> " + str(nn.calculate([0,0])))
+        print("1 and 0 -> " + str(nn.calculate([1,0])))
+        print("0 and 1 -> " + str(nn.calculate([0,1])))
+        print("1 and 1 -> " + str(nn.calculate([1,1])))
 
         num_inputs = 2
         num_layers = 3
@@ -269,8 +269,6 @@ def main():
         print("1 and 0 -> " + str(nn.calculate([1,0])))
         print("0 and 1 -> " + str(nn.calculate([0,1])))
         print("1 and 1 -> " + str(nn.calculate([1,1])))
-
-        nn.print_nn()
 
 if __name__ == '__main__':
     main()
