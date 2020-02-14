@@ -173,7 +173,7 @@ class NeuralNetwork:
             derivs.append(get_deriv(self.loss)(prediction[i],target[i]) * 
                           get_deriv(self.activation[self.num_layers-1])(prediction[i]))
 
-        for i in range(self.num_layers-2,-1,-1):
+        for i in range(self.num_layers-1,-1,-1):
             derivs = self.layers[self.num_layers-1].train(derivs)
 
     def print_nn(self):
