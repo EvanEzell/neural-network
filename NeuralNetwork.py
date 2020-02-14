@@ -10,8 +10,14 @@ def linear_deriv(x) : return 1
 def square_error(prediction, target):
     total = 0
     for i in range(len(prediction)):
-        total += .5 * ((prediction[i]-target[i])**2)
+        total += (prediction[i]-target[i])**2
     return total
+def mse(data):
+    total = 0
+    for sample in data:
+        prediction, target = sample
+        total += square_error(prediction,target)
+    return total/len(data)
 def log_loss(prediction, target):
     total = 0
     for i in range(len(prediction)):
