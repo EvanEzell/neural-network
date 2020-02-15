@@ -2,7 +2,7 @@ import numpy, sys
 
 # activation functions and their derivatives
 def logistic(x) : return 1 / (1 + numpy.exp(-x))
-def logistic_deriv(x) : return x * (1 - x)
+def logistic_deriv(x) : return logistic(x) * (1 - logistic(x))
 def linear(x) : return x
 def linear_deriv(x) : return 1
 
@@ -11,6 +11,12 @@ def square_error(prediction, target):
     total = 0
     for i in range(len(prediction)):
         total += (prediction[i]-target[i])**2
+    return total
+def difference(prediction, target):
+    total = 0
+    print(prediction)
+    for i in range(len(prediction)):
+        total += prediction[i]-target[i]
     return total
 def mse(data):
     total = 0
@@ -28,6 +34,8 @@ def log_loss(prediction, target):
     return total
 def square_error_deriv(prediction, target):
     return prediction - target
+def difference_deriv(prediction, target):
+    return - (prediction - target)
 def log_loss_deriv(prediction, target):
     return - (target/prediction) + ((1-target)/(1-prediction))
 
@@ -36,6 +44,7 @@ def get_deriv(function):
     if function == logistic: return logistic_deriv 
     elif function == linear: return linear_deriv
     elif function == square_error: return square_error_deriv
+    elif function == difference: return difference_deriv
     elif function == log_loss: return log_loss_deriv
     else: return None
 
@@ -64,19 +73,27 @@ class Neuron:
         self.net = total + self.weights[len(data)]
         self.out = self.activate(self.net)
 
+        #print("net: " + str(self.net))
+        #print("out: " + str(self.out))
+
         return self.out
 
     def train(self, deriv):
-        self.delta = get_deriv(self.activation)(self.out)
+        print("in neuron train")
+        self.delta = get_deriv(self.activation)(self.net)*deriv
+        print("node_delta: " + str(self.delta))
+        print("previous: " + str(self.prev))
+        print("old weights: " + str(self.weights))
 
         weight_deltas = []
         for i in range(len(self.prev)):
-            weight_deltas.append(deriv * self.prev[i])
+            weight_deltas.append(self.delta * self.prev[i])
             self.weights[i] -= self.eta * weight_deltas[i]
+        self.weights[i+1] -= self.eta * self.delta
 
-        self.weights[i+1] -= self.eta * deriv
-
-        return weight_deltas 
+        print("weight_delats: " + str(weight_deltas))
+        print("new_weights: " + str(self.weights))
+        return weight_deltas
 
     def print_neuron(self):
         print("num_inputs: " + str(self.num_inputs))
@@ -115,10 +132,19 @@ class FullyConnectedLayer:
         return output
 
     def train(self, deriv):
+        print("in layer train")
+        print("derivs: " + str(deriv))
         delta_sums = []
+        print("num neurons in layer: " + str(self.num_neurons))
         for i in range(self.num_neurons):
-            delta_sums.append(sum(self.neurons[i].train(deriv[i])))
+            print("training neuron " + str(i))
+            self.neurons[i].print_neuron()
+            print("after neuron print")
+            print(derivs[i])
+            print("after deriv print")
+            delta_sums.append(sum(self.neurons[i].train(derivs[i])))
 
+        print("delta_sums: " + str(delta_sums))
         return(delta_sums)
 
     def print_layer(self):
@@ -166,6 +192,7 @@ class NeuralNetwork:
         output = data
         for layer in self.layers:
             output = layer.calculate(output)
+            print(output)
         return output
 
     def calculateloss(self, prediction, target):
@@ -173,14 +200,16 @@ class NeuralNetwork:
 
     def train(self, data, target):
         prediction = self.calculate(data)
+        print("prediction: " + str(prediction))
 
         derivs = []
         for i in range(len(prediction)):
-            derivs.append(get_deriv(self.loss)(prediction[i],target[i]) * 
-                          get_deriv(self.activation[self.num_layers-1])(prediction[i]))
+            derivs.append(get_deriv(self.loss)(prediction[i],target[i]))
+        print("derivs: " + str(derivs))
 
         for i in range(self.num_layers-1,-1,-1):
-            derivs = self.layers[self.num_layers-1].train(derivs)
+            derivs = self.layers[i].train(derivs)
+            print("derivs for layer " + str(i) + ": " + str(derivs))
 
     def print_nn(self):
         for i in range(self.num_layers):
@@ -235,6 +264,22 @@ def main():
         print("1 and 1 -> " + str(nn.calculate([1,1])))
         
     else:
+        print("Running 'xor' example from online.")
+        num_inputs = 2
+        num_layers = 2
+        num_neurons = [2,1]
+        weights = [[[-0.06782947598673161,0.2214514234604232,-0.4654700884762584],[0.9487814395569221,0.4662836664076017,0.10219816991955463]],[[-0.21256111621528748,0.6039091636457407,0.8141837643885104]]]
+        nn = NeuralNetwork(num_layers, num_neurons, "logistic", 
+                           num_inputs, difference, .7, weights)
+        #print(nn.calculate([0,1]))
+        inputs = [([0, 0], [0]), ([0, 1], [1]), ([1, 0], [1]), ([1, 1], [0])]
+        #data = [(nn.calculate(x),y) for x,y in inputs]
+        #print(mse(data))
+        nn.train([0,1],[1])
+        exit()
+        nn.print_nn()
+        exit()
+        
         print("Running 'xor' example.")
         num_inputs = 2
         num_layers = 2
