@@ -80,19 +80,27 @@ class Neuron:
 
     def train(self, deriv):
         print("in neuron train")
+        print("deriv: " + str(deriv))
+        print("net: " + str(self.net))
+        print("deriv of net: " + str(get_deriv(self.activation)(self.net)))
         self.delta = get_deriv(self.activation)(self.net)*deriv
         print("node_delta: " + str(self.delta))
         print("previous: " + str(self.prev))
         print("old weights: " + str(self.weights))
 
+
         weight_deltas = []
         for i in range(len(self.prev)):
-            weight_deltas.append(self.delta * self.prev[i])
-            self.weights[i] -= self.eta * weight_deltas[i]
+            weight_deltas.append(self.delta * self.weights[i])
+        print("weight_delats: " + str(weight_deltas))
+
+        # update weights
+        for i in range(len(self.prev)):
+            self.weights[i] -= self.eta * self.delta * self.prev[i]
         self.weights[i+1] -= self.eta * self.delta
 
-        print("weight_delats: " + str(weight_deltas))
         print("new_weights: " + str(self.weights))
+
         return weight_deltas
 
     def print_neuron(self):
@@ -131,20 +139,19 @@ class FullyConnectedLayer:
 
         return output
 
-    def train(self, deriv):
+    def train(self, derivs):
         print("in layer train")
-        print("derivs: " + str(deriv))
+        print("derivs: " + str(derivs))
         delta_sums = []
         print("num neurons in layer: " + str(self.num_neurons))
-        for i in range(self.num_neurons):
+        delta_sums = self.neurons[0].train(derivs[0])
+        for i in range(1,self.num_neurons):
             print("training neuron " + str(i))
-            self.neurons[i].print_neuron()
-            print("after neuron print")
-            print(derivs[i])
-            print("after deriv print")
-            delta_sums.append(sum(self.neurons[i].train(derivs[i])))
+            print(self.neurons[i].train(derivs[i]))
+            delta_sums = numpy.add(delta_sums,self.neurons[i].train(derivs[i]))
 
         print("delta_sums: " + str(delta_sums))
+        exit()
         return(delta_sums)
 
     def print_layer(self):
