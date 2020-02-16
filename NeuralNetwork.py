@@ -265,33 +265,31 @@ def main():
         print("1 and 1 -> " + str(nn.calculate([1,1])))
         
     else:
-        print("Running 'xor' example from online.")
-        num_inputs = 2
-        num_layers = 2
-        num_neurons = [2,1]
-        weights = [[[-0.06782947598673161,0.2214514234604232,-0.4654700884762584],[0.9487814395569221,0.4662836664076017,0.10219816991955463]],[[-0.21256111621528748,0.6039091636457407,0.8141837643885104]]]
-        nn = NeuralNetwork(num_layers, num_neurons, logistic, 
-                           num_inputs, square_error, .2, weights)
-        #print(nn.calculate([0,1]))
-        inputs = [([0, 0], [0]), ([0, 1], [1]), ([1, 0], [1]), ([1, 1], [0])]
-        data = [(nn.calculate(x),y) for x,y in inputs]
-        #nn.train([0,1],[1])
-        print("mse before: " + str(mse(data)))
-        for i in range(8000):
-            for sample, target in inputs:
-                nn.train(sample, target)
+        if debug: 
+            print("Running 'xor' example from online.")
+            num_inputs = 2
+            num_layers = 2
+            num_neurons = [2,1]
+            weights = [[[-0.06782947598673161,0.2214514234604232,-0.4654700884762584],[0.9487814395569221,0.4662836664076017,0.10219816991955463]],[[-0.21256111621528748,0.6039091636457407,0.8141837643885104]]]
+            nn = NeuralNetwork(num_layers, num_neurons, logistic, 
+                               num_inputs, square_error, .2, weights)
+            #print(nn.calculate([0,1]))
+            inputs = [([0, 0], [0]), ([0, 1], [1]), ([1, 0], [1]), ([1, 1], [0])]
             data = [(nn.calculate(x),y) for x,y in inputs]
-            print("mse after: " + str(mse(data)))
-
-        print("Outputs for all 4 inputs after training.")
-        print("0 and 0 -> " + str(nn.calculate([0,0])))
-        print("1 and 0 -> " + str(nn.calculate([1,0])))
-        print("0 and 1 -> " + str(nn.calculate([0,1])))
-        print("1 and 1 -> " + str(nn.calculate([1,1])))
-        exit()
-        nn.print_nn()
-        exit()
-        
+            #nn.train([0,1],[1])
+            print("mse before: " + str(mse(data)))
+            for i in range(8000):
+                for sample, target in inputs:
+                    nn.train(sample, target)
+                data = [(nn.calculate(x),y) for x,y in inputs]
+                print("mse after: " + str(mse(data)))
+    
+            print("Outputs for all 4 inputs after training.")
+            print("0 and 0 -> " + str(nn.calculate([0,0])))
+            print("1 and 0 -> " + str(nn.calculate([1,0])))
+            print("0 and 1 -> " + str(nn.calculate([0,1])))
+            print("1 and 1 -> " + str(nn.calculate([1,1])))
+            exit()
         print("Running 'xor' example.")
         num_inputs = 2
         num_layers = 2
@@ -300,10 +298,10 @@ def main():
 
         print("Training with one perceptron.")
         inputs = [([0, 0], [0]), ([0, 1], [1]), ([1, 0], [1]), ([1, 1], [0])]
-        nn = NeuralNetwork(num_layers, num_neurons, "logistic", 
-                           num_inputs, square_error, .1, weights)
+        nn = NeuralNetwork(num_layers, num_neurons, logistic, 
+                           num_inputs, square_error, .2, weights)
 
-        for i in range(250000):
+        for i in range(8000):
             for sample, target in inputs:
                 nn.train(sample, target)
 
@@ -312,18 +310,19 @@ def main():
         print("1 and 0 -> " + str(nn.calculate([1,0])))
         print("0 and 1 -> " + str(nn.calculate([0,1])))
         print("1 and 1 -> " + str(nn.calculate([1,1])))
+        print()
 
         num_inputs = 2
-        num_layers = 3
-        num_neurons = [3,3,1]
+        num_layers = 2
+        num_neurons = [2,1]
         weights = "random"
 
         print("Training with multiple perceptrons.")
         inputs = [([0, 0], [0]), ([0, 1], [1]), ([1, 0], [1]), ([1, 1], [0])]
-        nn = NeuralNetwork(num_layers, num_neurons, "logistic", 
-                           num_inputs, square_error, .1, weights)
+        nn = NeuralNetwork(num_layers, num_neurons, logistic, 
+                           num_inputs, square_error, .2, weights)
 
-        for i in range(250000):
+        for i in range(8000):
             for sample, target in inputs:
                 nn.train(sample, target)
 
@@ -332,6 +331,7 @@ def main():
         print("1 and 0 -> " + str(nn.calculate([1,0])))
         print("0 and 1 -> " + str(nn.calculate([0,1])))
         print("1 and 1 -> " + str(nn.calculate([1,1])))
+        print()
 
 if __name__ == '__main__':
     main()
