@@ -232,7 +232,7 @@ def main():
         num_neurons = [2,2]
         weights = [[[.15,.20,.35],[.25,.30,.35]],[[.40,.45,.60],[.50,.55,.60]]]
 
-        nn = NeuralNetwork(num_layers, num_neurons, "logistic", 
+        nn = NeuralNetwork(num_layers, num_neurons, logistic, 
                            num_inputs, square_error, .5, weights)
 
         print("Loss before training example: ", end = '')
@@ -250,11 +250,11 @@ def main():
         num_neurons = [1,1]
         weights = "random"
 
-        nn = NeuralNetwork(num_layers, num_neurons, "logistic", 
+        nn = NeuralNetwork(num_layers, num_neurons, logistic, 
                            num_inputs, square_error, .1, weights)
 
         inputs = [([0, 0], [0]), ([0, 1], [0]), ([1, 0], [0]), ([1, 1], [1])]
-        for i in range(250000):
+        for i in range(8000):
             for sample, target in inputs:
                 nn.train(sample, target)
 
@@ -331,7 +331,6 @@ def main():
         print("1 and 0 -> " + str(nn.calculate([1,0])))
         print("0 and 1 -> " + str(nn.calculate([0,1])))
         print("1 and 1 -> " + str(nn.calculate([1,1])))
-        print()
 
 if __name__ == '__main__':
     main()
