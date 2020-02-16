@@ -168,10 +168,7 @@ class NeuralNetwork:
 
         self.activation = []
         for i in range(num_layers):
-            if activation == "logistic":
-                self.activation.append(logistic)
-            elif activation == "linear":
-                self.activation.append(linear)
+            self.activation.append(activation)
 
         self.layers = []
         prev_inputs = self.num_inputs
@@ -273,7 +270,7 @@ def main():
         num_layers = 2
         num_neurons = [2,1]
         weights = [[[-0.06782947598673161,0.2214514234604232,-0.4654700884762584],[0.9487814395569221,0.4662836664076017,0.10219816991955463]],[[-0.21256111621528748,0.6039091636457407,0.8141837643885104]]]
-        nn = NeuralNetwork(num_layers, num_neurons, "logistic", 
+        nn = NeuralNetwork(num_layers, num_neurons, logistic, 
                            num_inputs, square_error, .2, weights)
         #print(nn.calculate([0,1]))
         inputs = [([0, 0], [0]), ([0, 1], [1]), ([1, 0], [1]), ([1, 1], [0])]
