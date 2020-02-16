@@ -10,7 +10,7 @@ def linear_deriv(x) : return 1
 def square_error(prediction, target):
     total = 0
     for i in range(len(prediction)):
-        total += (prediction[i]-target[i])**2
+        total += .5 * (prediction[i]-target[i])**2
     return total
 def difference(prediction, target):
     total = 0
@@ -144,6 +144,7 @@ class FullyConnectedLayer:
         print("derivs: " + str(derivs))
         delta_sums = []
         print("num neurons in layer: " + str(self.num_neurons))
+        print("training neuron 0")
         delta_sums = self.neurons[0].train(derivs[0])
         for i in range(1,self.num_neurons):
             print("training neuron " + str(i))
@@ -151,7 +152,6 @@ class FullyConnectedLayer:
             delta_sums = numpy.add(delta_sums,self.neurons[i].train(derivs[i]))
 
         print("delta_sums: " + str(delta_sums))
-        exit()
         return(delta_sums)
 
     def print_layer(self):
@@ -277,12 +277,17 @@ def main():
         num_neurons = [2,1]
         weights = [[[-0.06782947598673161,0.2214514234604232,-0.4654700884762584],[0.9487814395569221,0.4662836664076017,0.10219816991955463]],[[-0.21256111621528748,0.6039091636457407,0.8141837643885104]]]
         nn = NeuralNetwork(num_layers, num_neurons, "logistic", 
-                           num_inputs, difference, .7, weights)
+                           num_inputs, square_error, .7, weights)
         #print(nn.calculate([0,1]))
         inputs = [([0, 0], [0]), ([0, 1], [1]), ([1, 0], [1]), ([1, 1], [0])]
-        #data = [(nn.calculate(x),y) for x,y in inputs]
-        #print(mse(data))
-        nn.train([0,1],[1])
+        data = [(nn.calculate(x),y) for x,y in inputs]
+        print("mse before: " + str(mse(data)))
+        #nn.train([0,1],[1])
+        for i in range(10):
+            for sample, target in inputs:
+                nn.train(sample, target)
+        data = [(nn.calculate(x),y) for x,y in inputs]
+        print("mse after: " + str(mse(data)))
         exit()
         nn.print_nn()
         exit()
