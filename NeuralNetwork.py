@@ -68,16 +68,16 @@ class Neuron:
         return self.out
 
     def train(self, deriv):
-        self.delta = get_deriv(self.activation)(self.net)*deriv
+        delta = get_deriv(self.activation)(self.net)*deriv
 
         weight_deltas = []
         for i in range(len(self.prev)):
-            weight_deltas.append(self.delta * self.weights[i])
+            weight_deltas.append(delta * self.weights[i])
 
         # update weights
         for i in range(len(self.prev)):
-            self.weights[i] -= self.eta * self.delta * self.prev[i]
-        self.weights[i+1] -= self.eta * self.delta
+            self.weights[i] -= self.eta * delta * self.prev[i]
+        self.weights[i+1] -= self.eta * delta
 
         return weight_deltas
 
