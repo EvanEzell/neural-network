@@ -6,18 +6,12 @@ def logistic_deriv(x) : return logistic(x) * (1 - logistic(x))
 def linear(x) : return x
 def linear_deriv(x) : return 1
 
-# loss functions and their derivatives
+# online loss functions and their derivatives
 def square_error(prediction, target):
     total = 0
     for i in range(len(prediction)):
         total += (prediction[i]-target[i])**2
     return total
-def mse(data):
-    total = 0
-    for sample in data:
-        prediction, target = sample
-        total += square_error(prediction,target)
-    return total/len(data)
 def log_loss(prediction, target):
     total = 0
     for i in range(len(prediction)):
@@ -31,6 +25,14 @@ def square_error_deriv(prediction, target):
 def log_loss_deriv(prediction, target):
     return - (target/prediction) + ((1-target)/(1-prediction))
 
+# batch loss functions
+def mse(data):
+    total = 0
+    for sample in data:
+        prediction, target = sample
+        total += square_error(prediction,target)
+    return total/len(data)
+
 # get the derivative of a function
 def get_deriv(function):
     if function == logistic: return logistic_deriv 
@@ -40,7 +42,6 @@ def get_deriv(function):
     else: return None
 
 class Neuron:
-    
     def __init__(self, activation, num_inputs, eta, weights):
         self.activation = activation
         self.num_inputs = num_inputs
