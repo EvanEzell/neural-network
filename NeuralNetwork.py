@@ -38,7 +38,6 @@ def get_deriv(function):
     if function == logistic: return logistic_deriv 
     elif function == linear: return linear_deriv
     elif function == square_error: return square_error_deriv
-    elif function == difference: return difference_deriv
     elif function == log_loss: return log_loss_deriv
     else: return None
 
