@@ -68,7 +68,7 @@ class Neuron:
         return self.out
 
     def train(self, deriv):
-        delta = get_deriv(self.activation)(self.net)*deriv
+        delta = get_deriv(self.activation)(self.net) * deriv
 
         weight_deltas = []
         for i in range(len(self.prev)):
@@ -114,14 +114,13 @@ class FullyConnectedLayer:
         output = []
         for i in range(self.num_neurons):
             output.append(self.neurons[i].calculate(data))
-
         return output
 
     def train(self, derivs):
         delta_sums = self.neurons[0].train(derivs[0])
         for i in range(1,self.num_neurons):
-            delta_sums = numpy.add(delta_sums,self.neurons[i].train(derivs[i]))
-
+            delta_sums = numpy.add(delta_sums,
+                                   self.neurons[i].train(derivs[i]))
         return(delta_sums)
 
     def print_layer(self):
@@ -168,8 +167,8 @@ class NeuralNetwork:
             output = layer.calculate(output)
         return output
 
-    def calculateloss(self, prediction, target):
-        return self.loss(prediction, target)
+    def calculate_loss(self, sample, target):
+        return self.loss(self.calculate(sample), target)
 
     def train(self, data, target):
         prediction = self.calculate(data)
@@ -177,13 +176,15 @@ class NeuralNetwork:
         derivs = []
         for i in range(len(prediction)):
             derivs.append(get_deriv(self.loss)(prediction[i],target[i]))
+
         for i in range(self.num_layers-1,-1,-1):
             derivs = self.layers[i].train(derivs)
 
     def print_nn(self):
         for i in range(self.num_layers):
             print("Layer " + str(i))
-            print("Number of Neurons in Layer: " + str(self.layers[i].num_neurons))
+            print("Number of Neurons in Layer: " + 
+                  str(self.layers[i].num_neurons))
             self.layers[i].print_layer()
 
 def main():
@@ -198,18 +199,19 @@ def main():
         num_inputs = 2
         num_layers = 2
         num_neurons = [2,2]
-        weights = [[[.15,.20,.35],[.25,.30,.35]],[[.40,.45,.60],[.50,.55,.60]]]
+        weights = [[[.15,.20,.35],[.25,.30,.35]],
+                   [[.40,.45,.60],[.50,.55,.60]]]
 
         nn = NeuralNetwork(num_layers, num_neurons, logistic, 
                            num_inputs, square_error, .5, weights)
 
         print("Loss before training example: ", end = '')
-        print(nn.calculateloss(nn.calculate([.05,.10]),[.01,.99]))
+        print(nn.calculate_loss([.05,.10],[.01,.99]))
 
         nn.train([.05,.10],[.01,.99])
 
         print("Loss after training example: ", end = '')
-        print(nn.calculateloss(nn.calculate([.05,.10]),[.01,.99]))
+        print(nn.calculate_loss(nn.calculate([.05,.10]),[.01,.99]))
 
     elif sys.argv[1] == 'and':
         print("Running 'and' example.")
@@ -221,7 +223,9 @@ def main():
         nn = NeuralNetwork(num_layers, num_neurons, logistic, 
                            num_inputs, square_error, .1, weights)
 
-        inputs = [([0, 0], [0]), ([0, 1], [0]), ([1, 0], [0]), ([1, 1], [1])]
+        inputs = [([0,0],[0]), ([0,1],[0]), 
+                  ([1,0],[0]), ([1,1],[1])]
+
         for i in range(8000):
             for sample, target in inputs:
                 nn.train(sample, target)
@@ -240,7 +244,9 @@ def main():
         weights = "random"
 
         print("Training with one perceptron.")
-        inputs = [([0, 0], [0]), ([0, 1], [1]), ([1, 0], [1]), ([1, 1], [0])]
+        inputs = [([0,0],[0]), ([0,1],[1]),
+                  ([1,0],[1]), ([1,1],[0])]
+
         nn = NeuralNetwork(num_layers, num_neurons, logistic, 
                            num_inputs, square_error, .2, weights)
 
@@ -261,7 +267,9 @@ def main():
         weights = "random"
 
         print("Training with multiple perceptrons.")
-        inputs = [([0, 0], [0]), ([0, 1], [1]), ([1, 0], [1]), ([1, 1], [0])]
+        inputs = [([0,0],[0]), ([0,1],[1]),
+                  ([1,0],[1]), ([1,1],[0])]
+
         nn = NeuralNetwork(num_layers, num_neurons, logistic, 
                            num_inputs, square_error, .2, weights)
 
