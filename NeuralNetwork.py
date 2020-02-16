@@ -14,12 +14,6 @@ def square_error(prediction, target):
     for i in range(len(prediction)):
         total += (prediction[i]-target[i])**2
     return total
-def difference(prediction, target):
-    total = 0
-    print(prediction)
-    for i in range(len(prediction)):
-        total += prediction[i]-target[i]
-    return total
 def mse(data):
     total = 0
     for sample in data:
@@ -36,8 +30,6 @@ def log_loss(prediction, target):
     return total
 def square_error_deriv(prediction, target):
     return prediction - target
-def difference_deriv(prediction, target):
-    return - (prediction - target)
 def log_loss_deriv(prediction, target):
     return - (target/prediction) + ((1-target)/(1-prediction))
 
@@ -99,8 +91,8 @@ class Neuron:
 
         # update weights
         for i in range(len(self.prev)):
-            self.weights[i] += self.eta * self.delta * self.prev[i]
-        self.weights[i+1] += self.eta * self.delta
+            self.weights[i] -= self.eta * self.delta * self.prev[i]
+        self.weights[i+1] -= self.eta * self.delta
 
         if debug: print("new_weights: " + str(self.weights))
 
@@ -283,7 +275,7 @@ def main():
         num_neurons = [2,1]
         weights = [[[-0.06782947598673161,0.2214514234604232,-0.4654700884762584],[0.9487814395569221,0.4662836664076017,0.10219816991955463]],[[-0.21256111621528748,0.6039091636457407,0.8141837643885104]]]
         nn = NeuralNetwork(num_layers, num_neurons, "logistic", 
-                           num_inputs, difference, .2, weights)
+                           num_inputs, square_error, .2, weights)
         #print(nn.calculate([0,1]))
         inputs = [([0, 0], [0]), ([0, 1], [1]), ([1, 0], [1]), ([1, 1], [0])]
         data = [(nn.calculate(x),y) for x,y in inputs]
