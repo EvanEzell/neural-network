@@ -81,7 +81,7 @@ class Neuron:
 
         return weight_deltas
 
-    def print_neuron(self):
+    def print(self):
         print("num_inputs: " + str(self.num_inputs))
         print("eta: " + str(self.eta))
         count = 0
@@ -123,10 +123,10 @@ class FullyConnectedLayer:
                                    self.neurons[i].train(derivs[i]))
         return(delta_sums)
 
-    def print_layer(self):
+    def print(self):
         for i in range(self.num_neurons):
             print("neuron " + str(i))
-            self.neurons[i].print_neuron()
+            self.neurons[i].print()
             print("")
 
 class NeuralNetwork:
@@ -180,12 +180,12 @@ class NeuralNetwork:
         for i in range(self.num_layers-1,-1,-1):
             derivs = self.layers[i].train(derivs)
 
-    def print_nn(self):
+    def print(self):
         for i in range(self.num_layers):
             print("Layer " + str(i))
             print("Number of Neurons in Layer: " + 
                   str(self.layers[i].num_neurons))
-            self.layers[i].print_layer()
+            self.layers[i].print()
 
 def main():
     choices = ['example', 'and', 'xor']
